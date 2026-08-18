@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>はじめてのタロット | 公開ページ</title>
+    <style>
+      :root {
+        --bg: #f7efe6;
+        --paper: #fffaf3;
+        --ink: #2d221c;
+        --muted: #745748;
+        --accent: #8c3f2f;
+        --line: #e6d7c8;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font-family: "Hiragino Sans", "Yu Gothic", sans-serif;
+        background:
+          radial-gradient(circle at top right, rgba(214, 164, 84, 0.24), transparent 25%),
+          var(--bg);
+        color: var(--ink);
+      }
+      .wrap {
+        max-width: 860px;
+        margin: 0 auto;
+        padding: 28px 20px 80px;
+      }
+      .hero {
+        padding: 60px 20px 38px;
+        color: #fff3e4;
+        background:
+          radial-gradient(circle at top right, rgba(214, 164, 84, 0.2), transparent 34%),
+          linear-gradient(135deg, #2b1713, #5f3224);
+        border-bottom: 1px solid rgba(240, 201, 141, 0.28);
+      }
+      .hero-inner {
+        max-width: 852px;
+        margin: 0 auto;
+      }
+      .hero small {
+        display: block;
+        letter-spacing: 0.22em;
+        text-transform: uppercase;
+        color: #f0c98d;
+        margin-bottom: 8px;
+      }
+      .hero h1 {
+        margin: 0;
+        font-family: Georgia, "Times New Roman", serif;
+        font-size: clamp(2rem, 5vw, 3.4rem);
+        line-height: 1.06;
+      }
+      .hero p {
+        max-width: 60ch;
+        color: #f3dac7;
+        line-height: 1.8;
+      }
+      .card {
+        background: var(--paper);
+        border: 1px solid var(--line);
+        border-radius: 28px;
+        padding: 28px;
+        box-shadow: 0 18px 40px rgba(39, 22, 17, 0.08);
+      }
+      .links {
+        display: grid;
+        gap: 14px;
+        margin-top: 20px;
+      }
+      .featured {
+        background: linear-gradient(135deg, #3a2119, #70402f);
+        border-color: rgba(240, 201, 141, 0.45);
+        color: #fff3e4;
+      }
+      .featured strong {
+        color: #f0c98d;
+      }
+      .featured span {
+        color: #f3dac7;
+      }
+      a {
+        display: block;
+        padding: 18px 20px;
+        border-radius: 18px;
+        text-decoration: none;
+        color: var(--ink);
+        background: #fff6eb;
+        border: 1px solid var(--line);
+      }
+      a strong {
+        display: block;
+        font-size: 1.05rem;
+        color: var(--accent);
+        margin-bottom: 4px;
+      }
+      a span {
+        color: var(--muted);
+        line-height: 1.7;
+      }
+    </style>
+  </head>
+  <body>
+    <header class="hero">
+      <div class="hero-inner">
+        <small>はじめてのタロット</small>
+        <h1>公式情報と開発ストーリー</h1>
+        <p>
+          「はじめてのタロット」の開発記録、サポート情報、プライバシーポリシーをご案内します。
+        </p>
+      </div>
+    </header>
+    <main class="wrap">
+      <section class="card">
+        <div class="links">
+          <a class="featured" href="./product-architecture-workflow-ja.html">
+            <strong>AIとの対話でApp Store公開まで育てる</strong>
+            <span>企画、技術構成、鑑定ロジック、実機テスト、課金、審査までの開発ストーリー</span>
+          </a>
+          <a href="./support-ja.html">
+            <strong>サポート</strong>
+            <span>問い合わせ先、FAQ、不具合報告案内</span>
+          </a>
+          <a href="./privacy-policy-ja.html">
+            <strong>プライバシーポリシー</strong>
+            <span>端末内保存、自動送信なし、共有機能と注意事項の説明</span>
+          </a>
+        </div>
+      </section>
+    </main>
+  </body>
+</html>

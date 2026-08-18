@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="AIとの対話を重ねながら、タロットアプリを企画、実装、実機テスト、課金、App Store審査まで育てた開発記録です。" />
+    <meta property="og:title" content="AIとの対話で「はじめてのタロット」をApp Store公開まで育てる" />
+    <meta property="og:description" content="企画、UX、鑑定ロジック、技術構成、実機テスト、課金、審査までの開発ストーリー。" />
+    <meta property="og:type" content="article" />
+    <meta property="og:locale" content="ja_JP" />
+    <meta property="og:url" content="https://gitnaka161.github.io/hajimete-no-tarot-app/product-architecture-workflow-ja.html" />
+    <link rel="canonical" href="https://gitnaka161.github.io/hajimete-no-tarot-app/product-architecture-workflow-ja.html" />
+    <title>AIとの対話で「はじめてのタロット」をApp Store公開まで育てる</title>
+    <style>
+      :root {
+        --night: #251510;
+        --brown: #4d2d22;
+        --paper: #fffaf2;
+        --cream: #f7ecdc;
+        --ink: #30231d;
+        --muted: #765d50;
+        --gold: #c99645;
+        --gold-light: #efd8a6;
+        --red: #8f4637;
+        --line: #e3d1bd;
+      }
+      * { box-sizing: border-box; }
+      html { scroll-behavior: smooth; }
+      body {
+        margin: 0;
+        color: var(--ink);
+        background:
+          radial-gradient(circle at 13% 2%, rgba(234, 194, 117, 0.2), transparent 25rem),
+          radial-gradient(circle at 91% 16%, rgba(143, 70, 55, 0.2), transparent 26rem),
+          var(--cream);
+        font-family: "Yu Mincho", "Hiragino Mincho ProN", serif;
+        line-height: 1.95;
+      }
+      a { color: var(--red); text-underline-offset: 0.2em; }
+      .masthead {
+        position: relative;
+        overflow: hidden;
+        color: #fff8ec;
+        background:
+          linear-gradient(120deg, rgba(37, 21, 16, 0.98), rgba(92, 48, 35, 0.94)),
+          repeating-linear-gradient(45deg, transparent 0 18px, rgba(255,255,255,0.025) 18px 19px);
+        border-bottom: 1px solid rgba(239, 216, 166, 0.5);
+      }
+      .masthead::after {
+        content: "";
+        position: absolute;
+        width: 26rem;
+        height: 26rem;
+        right: -10rem;
+        top: -14rem;
+        border: 1px solid rgba(239, 216, 166, 0.28);
+        border-radius: 50%;
+        box-shadow: 0 0 0 3rem rgba(239, 216, 166, 0.035), 0 0 0 7rem rgba(239, 216, 166, 0.025);
+      }
+      .masthead-inner {
+        position: relative;
+        z-index: 1;
+        max-width: 1120px;
+        margin: 0 auto;
+        padding: 28px 24px 74px;
+      }
+      .back {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.45rem;
+        color: var(--gold-light);
+        text-decoration: none;
+        font-family: "Hiragino Sans", "Yu Gothic", sans-serif;
+        font-size: 0.88rem;
+      }
+      .eyebrow {
+        margin: 76px 0 14px;
+        color: #efc981;
+        font-family: Georgia, "Times New Roman", serif;
+        font-size: 0.78rem;
+        letter-spacing: 0.22em;
+        text-transform: uppercase;
+      }
+      h1 {
+        max-width: 900px;
+        margin: 0;
+        font-size: clamp(2.15rem, 6vw, 4.7rem);
+        font-weight: 500;
+        letter-spacing: -0.045em;
+        line-height: 1.22;
+      }
+      .lead {
+        max-width: 720px;
+        margin: 24px 0 0;
+        color: #ecdccd;
+        font-family: "Hiragino Sans", "Yu Gothic", sans-serif;
+        font-size: 1rem;
+        line-height: 1.85;
+      }
+      .meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 30px;
+      }
+      .meta span {
+        padding: 7px 12px;
+        color: #f7e8cf;
+        border: 1px solid rgba(239, 216, 166, 0.3);
+        border-radius: 999px;
+        background: rgba(255,255,255,0.05);
+        font-family: "Hiragino Sans", "Yu Gothic", sans-serif;
+        font-size: 0.78rem;
+      }
+      .layout {
+        display: grid;
+        grid-template-columns: minmax(0, 760px) 250px;
+        gap: 44px;
+        max-width: 1120px;
+        margin: -28px auto 0;
+        padding: 0 24px 90px;
+        align-items: start;
+      }
+      .article {
+        position: relative;
+        z-index: 2;
+        padding: clamp(28px, 5vw, 64px);
+        background:
+          linear-gradient(rgba(255, 250, 242, 0.97), rgba(255, 250, 242, 0.97)),
+          repeating-linear-gradient(0deg, transparent 0 5px, rgba(82, 48, 36, 0.035) 5px 6px);
+        border: 1px solid var(--line);
+        border-radius: 3px 30px 3px 30px;
+        box-shadow: 0 24px 70px rgba(52, 30, 23, 0.13);
+        min-width: 0;
+      }
+      .article h2,
+      .article h3,
+      .article h4 { scroll-margin-top: 24px; }
+      .article h2 {
+        margin: 3.2em 0 1em;
+        padding-bottom: 0.48em;
+        color: var(--brown);
+        border-bottom: 1px solid var(--line);
+        font-size: clamp(1.65rem, 4vw, 2.2rem);
+        font-weight: 600;
+        line-height: 1.45;
+      }
+      .article h2:first-child { margin-top: 0; }
+      .article h3 {
+        margin: 2.4em 0 0.7em;
+        color: var(--red);
+        font-size: 1.28rem;
+        line-height: 1.55;
+      }
+      .article h4 { margin: 2em 0 0.6em; }
+      .article p, .article li { font-size: 1rem; }
+      .article a { overflow-wrap: anywhere; }
+      .article ul, .article ol { padding-left: 1.45em; }
+      .article li { margin: 0.42em 0; }
+      .article blockquote {
+        margin: 2rem 0;
+        padding: 1.15rem 1.4rem;
+        color: #51382d;
+        background: #f8ead8;
+        border-left: 4px solid var(--gold);
+        border-radius: 0 14px 14px 0;
+      }
+      .article blockquote p { margin: 0; font-size: 1.08rem; }
+      .article code {
+        padding: 0.13em 0.36em;
+        color: #6d3027;
+        background: #f3e3d1;
+        border-radius: 5px;
+        font-family: Consolas, "SFMono-Regular", monospace;
+        font-size: 0.88em;
+      }
+      .article pre {
+        overflow-x: auto;
+        margin: 1.7rem 0;
+        padding: 1.2rem;
+        color: #f7e7d2;
+        background: #2d1c17;
+        border: 1px solid #58392e;
+        border-radius: 16px;
+        line-height: 1.65;
+      }
+      .article pre code { padding: 0; color: inherit; background: transparent; }
+      .article table {
+        display: block;
+        width: 100%;
+        overflow-x: auto;
+        margin: 1.6rem 0;
+        border-collapse: collapse;
+        font-family: "Hiragino Sans", "Yu Gothic", sans-serif;
+        font-size: 0.9rem;
+      }
+      .article th, .article td { padding: 0.75rem 0.85rem; border: 1px solid var(--line); text-align: left; }
+      .article th { color: #59382b; background: #f2dfc8; }
+      .article img { max-width: 100%; }
+      .mermaid {
+        overflow-x: auto;
+        margin: 1.7rem 0;
+        padding: 1rem;
+        background: #fffdf8;
+        border: 1px solid var(--line);
+        border-radius: 16px;
+      }
+      .toc {
+        position: sticky;
+        top: 24px;
+        margin-top: 54px;
+        padding: 20px;
+        color: var(--muted);
+        background: rgba(255,250,242,0.78);
+        border: 1px solid var(--line);
+        border-radius: 18px;
+        backdrop-filter: blur(12px);
+        font-family: "Hiragino Sans", "Yu Gothic", sans-serif;
+      }
+      .toc strong { display: block; margin-bottom: 11px; color: var(--brown); font-size: 0.84rem; letter-spacing: 0.12em; }
+      .toc a { display: block; padding: 5px 0; color: var(--muted); text-decoration: none; font-size: 0.78rem; line-height: 1.5; }
+      .toc a:hover { color: var(--red); }
+      footer {
+        padding: 42px 24px;
+        color: #dcc5b1;
+        text-align: center;
+        background: var(--night);
+        font-family: "Hiragino Sans", "Yu Gothic", sans-serif;
+        font-size: 0.82rem;
+      }
+      footer a { color: var(--gold-light); }
+      @media (max-width: 900px) {
+        .layout { grid-template-columns: minmax(0, 1fr); margin-top: -18px; padding-inline: 14px; }
+        .toc { display: none; }
+        .masthead-inner { padding-inline: 20px; }
+        .eyebrow { margin-top: 56px; }
+      }
+      @media (max-width: 540px) {
+        body { line-height: 1.85; }
+        .masthead-inner { padding-bottom: 54px; }
+        h1 { font-size: 2.12rem; }
+        .article { padding: 26px 20px 40px; border-radius: 2px 20px 2px 20px; }
+        .article h2 { margin-top: 2.6em; font-size: 1.55rem; }
+        .article p, .article li { font-size: 0.96rem; }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="masthead">
+      <div class="masthead-inner">
+        <a class="back" href="./index.html">&larr; 公式ページへ戻る</a>
+        <p class="eyebrow">Product story / 2026</p>
+        <h1>AIとの対話で<br />「はじめてのタロット」を<br />App Store公開まで育てる</h1>
+        <p class="lead">企画から辞典、鑑定ロジック、実機テスト、買い切り課金、App Store審査まで。AIと対話しながら、一つのアプリを公開品質へ近づけた記録です。</p>
+        <div class="meta">
+          <span>React Native / Expo</span>
+          <span>TypeScript</span>
+          <span>StoreKit</span>
+          <span>AI-assisted development</span>
+        </div>
+      </div>
+    </header>
+    <main class="layout">
+      <article class="article" id="article-body">
+        <p dir="auto">この資料は、梶谷健人さんのX記事「Claude Design × Claude Code × Codexで、Biz職でも凝ったスマホアプリは作れる」の構成を参考にしながら、<code class="notranslate">はじめてのタロット</code>の企画、UX、機能、鑑定ロジック、技術構成、開発ワークフロー、公開準備を独自に整理したものです。</p>
+<ul dir="auto">
+<li>参考記事: <a href="https://x.com/kajikent/status/2054709418638676386" rel="nofollow">https://x.com/kajikent/status/2054709418638676386</a></li>
+<li>詳細版: <a href="https://note.com/kajiken0630/n/n7adcefdbc1e7" rel="nofollow">https://note.com/kajiken0630/n/n7adcefdbc1e7</a></li>
+</ul>
+<p dir="auto">文章や画像を転載するのではなく、<code class="notranslate">前提 → 全体像 → UX設計 → ワークフロー → 役割分担 → 補足</code>という読みやすい構成だけを参考にしています。</p>
+<h2 dir="auto">前提: 今回作ったもの</h2>
+<p dir="auto"><code class="notranslate">はじめてのタロット</code>は、タロット全78枚の意味を学びながら、1枚引きからケルト十字まで段階的に占える日本語のiPhoneアプリです。</p>
+<p dir="auto">一言で表すと、次のようなアプリです。</p>
+<blockquote>
+<p dir="auto">カードの意味を調べる辞典と、カード同士のつながりまで読む占いを、静かに一つの端末で完結できるタロットアプリ。</p>
+</blockquote>
+<p dir="auto">最初の企画は大アルカナ22枚と1枚引き・4枚引きでした。その後、実機テストと内容レビューを繰り返し、現在は小アルカナを含む全78枚、複数スプレッド、履歴、内省メモ、買い切りProまで拡張しています。</p>
+<p dir="auto">技術スタックは、<code class="notranslate">TypeScript / React Native / Expo SDK 54</code>でアプリを実装し、<code class="notranslate">EAS Build</code>でiOSアプリをビルド、<code class="notranslate">TestFlight</code>で実機配布する構成です。履歴や相談テーマは<code class="notranslate">AsyncStorage</code>でiPhone内に保存し、買い切りProだけを<code class="notranslate">expo-iap</code>経由でAppleの<code class="notranslate">StoreKit</code>へ接続しています。鑑定は外部の生成AIやサーバーを呼び出さず、全78枚のデータとTypeScriptの合成ロジックだけで端末内生成します。</p>
+<pre lang="mermaid">flowchart LR
+  APP["React Native / Expo"] --&gt; LOGIC["TypeScript鑑定ロジック"]
+  APP --&gt; LOCAL["AsyncStorage / 端末内履歴"]
+  APP --&gt; IAP["expo-iap / StoreKit"]
+  APP --&gt; EAS["EAS Build"]
+  EAS --&gt; TF["TestFlight"]
+  TF --&gt; STORE["App Store"]
+</pre>
+
+<h3 dir="auto">この技術構成を選んだ理由</h3>
+<p dir="auto">Swift / SwiftUIによるiOSネイティブ実装ではなくExpoを採用したのは、JavaScriptとTypeScriptの一つのコードベースで画面、占いロジック、Web確認まで進められ、AIとの反復開発がしやすいためです。初期公開はiPhoneに集中しますが、Android展開の余地も残せます。</p>
+<p dir="auto">一方で、すべてをWeb技術だけで済ませているわけではありません。App Storeの購入と復元はAppleの仕組みを使う必要があるため、そこだけは<code class="notranslate">expo-iap</code>を通してネイティブ課金へ接続します。Expo Goでは画面を素早く確認し、実際の購入はネイティブコードを含むTestFlight版で確認する、という役割分担です。</p>
+<p dir="auto">また、バックエンド、会員データベース、外部AI APIを持たないことも意図した設計です。運用費を抑えられるだけでなく、相談内容を端末外へ送らないという、このアプリのプライバシー上の価値につながっています。</p>
+<h2 dir="auto">解決したい課題</h2>
+<p dir="auto">既存のタロットアプリには、カードの意味が短すぎる、結果が抽象的で自分の状況へ結び付けにくい、逆位置が必要以上に否定的、複雑なスプレッドが正しい形で表示されない、といった使いづらさがあります。</p>
+<p dir="auto">このアプリでは、次の4点を中核価値にしています。</p>
+<ol dir="auto">
+<li>初心者は結論から読め、中級者は象徴やカード同士の関係まで掘り下げられる。</li>
+<li>単語の羅列ではなく、質問、位置、正逆、カード全体の偏りを組み合わせて読む。</li>
+<li>厳しいカードも「悪い未来の確定」ではなく、停滞・過剰・不足・内向化を整える手掛かりとして扱う。</li>
+<li>相談内容や履歴を外部へ送らず、端末内で安心して使える。</li>
+</ol>
+<h2 dir="auto">対象ユーザー</h2>
+<ul dir="auto">
+<li>タロットを初めて使い、カード名や基本の意味から学びたい人</li>
+<li>一通り意味を知っているが、複数枚のつながりを読むのが難しい人</li>
+<li>恋愛、仕事、お金、人間関係について、自分で考えるきっかけが欲しい人</li>
+<li>広告、ログイン、トラッキングのない静かな占いアプリを使いたい人</li>
+</ul>
+<p dir="auto">本アプリは未来や事実を断定するためのものではありません。占いを、自己理解、状況整理、次の行動を選ぶための補助線として扱います。</p>
+<h2 dir="auto">主な機能</h2>
+<h3 dir="auto">無料で使える機能</h3>
+<ul dir="auto">
+<li>タロット全78枚のカード辞典</li>
+<li>正位置・逆位置、象徴、物語、ブレインマップ、恋愛、仕事、金運、人間関係の解説</li>
+<li>端末ごとに一日固定される「今日の一枚」</li>
+<li>1枚引き</li>
+<li>過去・現在・未来・助言の4枚引き</li>
+<li>Yes / No</li>
+<li>あなた・相手・二人の関係を読む3枚の相性占い</li>
+<li>正式な十字と杖の配置で表示する10枚のケルト十字</li>
+<li>占い結果への気づきメモ</li>
+<li>結果の共有</li>
+<li>端末内履歴24件と、直近の逆位置傾向の振り返り</li>
+</ul>
+<h3 dir="auto">買い切りProで追加される機能</h3>
+<ul dir="auto">
+<li>7枚で二つの選択肢を比較する「選択の天秤」</li>
+<li>12枚で各月の流れを見る「一年の扉」</li>
+<li>端末内履歴の上限を24件から120件へ拡張</li>
+<li>サブスクリプションではなく、一度購入すれば継続利用できる非消耗型課金</li>
+</ul>
+<p dir="auto">商品IDは<code class="notranslate">hajimete_tarot_pro_lifetime</code>です。価格表示はアプリへ固定せず、StoreKitから利用者の地域に合う表示価格を取得します。</p>
+<h2 dir="auto">情報設計</h2>
+<p dir="auto">アプリの下部ナビゲーションは、利用目的をそのまま入口にしています。</p>
+<markdown-accessiblity-table><table role="table">
+<thead>
+<tr>
+<th>画面</th>
+<th>役割</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ホーム</td>
+<td>今日の一枚、最新結果、主要機能への入口</td>
+</tr>
+<tr>
+<td>辞典</td>
+<td>78枚の検索と詳細学習</td>
+</tr>
+<tr>
+<td>1枚引き</td>
+<td>一つのテーマを短く読む</td>
+</tr>
+<tr>
+<td>4枚引き</td>
+<td>時間の流れと助言を読む</td>
+</tr>
+<tr>
+<td>展開</td>
+<td>Yes / No、相性、ケルト十字を選ぶ</td>
+</tr>
+<tr>
+<td>履歴</td>
+<td>過去の結果、メモ、傾向を振り返る</td>
+</tr>
+<tr>
+<td>Pro</td>
+<td>追加スプレッド、購入、復元を扱う</td>
+</tr>
+</tbody>
+</table></markdown-accessiblity-table>
+<pre lang="mermaid">flowchart LR
+  H["ホーム"] --&gt; D["辞典で学ぶ"]
+  H --&gt; Q["質問を入力する"]
+  Q --&gt; S["スプレッドを選ぶ"]
+  S --&gt; R["カードを引く"]
+  R --&gt; I["要約と各位置を読む"]
+  I --&gt; A["今日の一歩を決める"]
+  I --&gt; M["気づきをメモする"]
+  M --&gt; L["履歴で振り返る"]
+  L --&gt; D
+</pre>
+
+<p dir="auto">辞典と占いを別機能として分断せず、<code class="notranslate">調べる → 引く → 読む → 記録する → 学び直す</code>という循環にしていることが構造上の特徴です。</p>
+<h2 dir="auto">UXの5レイヤーで見る設計</h2>
+<h3 dir="auto">Strategy: なぜ作るか</h3>
+<p dir="auto">利用者のゴールは「未来を言い当ててもらうこと」だけではありません。カードを通して状況を整理し、自分が動かせる部分を見つけることです。</p>
+<p dir="auto">プロダクト側のゴールは、無料でも十分役立つ辞典と占いを提供し、もっと深く継続して使いたい人にだけ買い切りProを選んでもらうことです。</p>
+<h3 dir="auto">Scope: 何を提供するか</h3>
+<p dir="auto">初期リリースでは、辞典、主要5スプレッド、履歴、メモ、共有を無料範囲としました。Proは無料機能を不自然に削るのではなく、枚数が多く設計も複雑な2スプレッドと履歴拡張を追加します。</p>
+<p dir="auto">会員登録、広告、解析SDK、通知、クラウド同期、実行時の生成AI通信は入れていません。機能を増やすより、鑑定文の一貫性、読みやすさ、プライバシーを優先しています。</p>
+<h3 dir="auto">Structure: どう流れるか</h3>
+<p dir="auto">質問入力から結果までの基本構造は、すべての占いで共通です。</p>
+<ol dir="auto">
+<li>利用者がテーマを入力する。</li>
+<li>アプリが重複なしでカードを引き、各カードへ正位置または逆位置を割り当てる。</li>
+<li>スプレッド固有の位置へカードを配置する。</li>
+<li>質問分野、位置、カード、正逆を組み合わせて各位置を読む。</li>
+<li>複数枚の偏りと関係から全体像を合成する。</li>
+<li>最後に、現実で試せる小さな行動へ落とし込む。</li>
+<li>結果と任意のメモを端末内履歴へ保存する。</li>
+</ol>
+<h3 dir="auto">Skeleton: 画面上でどう配置するか</h3>
+<ul dir="auto">
+<li>最初に要約を置き、結論を探して長文をさまよわなくてよい構成にする。</li>
+<li>各位置には番号、役割、カード名、正逆を常に表示する。</li>
+<li>4枚引きは上段に助言、下段に過去・現在・未来を配置する。</li>
+<li>ケルト十字は1〜6枚の十字と7〜10枚の杖を実際の展開形で表示する。</li>
+<li>長い鑑定は見出し単位に分け、具体的な読み筋と行動案を分離する。</li>
+<li>質問欄ではiPhoneのキーボード表示を考慮し、実行時にキーボードを閉じる。</li>
+<li>辞典は章ジャンプとブレインマップを備え、長文でも目的の項目へ移動できるようにする。</li>
+</ul>
+<h3 dir="auto">Surface: どう感じてもらうか</h3>
+<p dir="auto">濃い茶、生成り、金色を基調とした紙面調の画面に、Rider-Waite-Smith系のカード画像を組み合わせています。神秘性は残しつつ、怖さや過剰な装飾よりも「落ち着いて読めること」を優先しています。</p>
+<p dir="auto">逆位置や厳しい結果では、意味を薄めて楽観的にするのではなく、現状の課題と変更可能な行動をセットで示します。利用者を落ち込ませず、同時に根拠のない安心も与えないトーンを目指しています。</p>
+<h2 dir="auto">鑑定生成のワークフロー</h2>
+<p dir="auto">このアプリは、利用時にGPTや外部AIへ質問を送って鑑定しているわけではありません。78枚の独自データと、スプレッド別のルールを端末上で組み合わせて文章を生成します。</p>
+<pre lang="mermaid">flowchart TD
+  Q["利用者の質問"] --&gt; C["恋愛・仕事・金運・人間関係などを推定"]
+  C --&gt; D["78枚から重複なしで抽選"]
+  D --&gt; O["正位置・逆位置を決定"]
+  O --&gt; P["スプレッドの位置へ割り当て"]
+  P --&gt; T["質問分野 × 位置 × 正逆で個別解釈"]
+  T --&gt; X["スート・大アルカナ・逆位置・数字の重なりを分析"]
+  X --&gt; S["要約・具体的な読み筋・全体傾向を合成"]
+  S --&gt; A["今日の一歩と内省の問い"]
+  A --&gt; H["端末内履歴へ保存"]
+</pre>
+
+<h3 dir="auto">1. 質問を文脈へ変換する</h3>
+<p dir="auto">入力された質問から、恋愛、仕事、金運、人間関係などの分野を端末内で推定します。相性占いでは、片思い、交際中、復縁、夫婦、仕事関係などの関係段階も読み分けます。ケルト十字では、質問に期間が含まれる場合、その時間軸も解釈へ反映します。</p>
+<h3 dir="auto">2. カード単体を位置の意味へ翻訳する</h3>
+<p dir="auto">同じカードでも、現在、障害、潜在意識、近い未来、相手側、二人の関係、最終結果では読み方が変わります。カードの一般的な意味をそのまま貼り付けず、「その位置で何を表すのか」というレンズを通します。</p>
+<h3 dir="auto">3. 正位置と逆位置を読み分ける</h3>
+<p dir="auto">逆位置は一律に悪い意味へ変換しません。カードごとに次の4軸のどれが強いかを持たせています。</p>
+<ul dir="auto">
+<li>停滞: 力はあるが動いていない</li>
+<li>過剰: 力が強く出すぎている</li>
+<li>不足: 必要な力が十分に使えていない</li>
+<li>内向化: 外の出来事より内面で働いている</li>
+</ul>
+<p dir="auto">これにより、「悪いカードだった」で終わらず、何を調整できるかまで示します。</p>
+<h3 dir="auto">4. 複数枚の関係を読む</h3>
+<p dir="auto">全体鑑定では、個々のカード以外に次のシグナルを確認します。</p>
+<ul dir="auto">
+<li>ワンド、カップ、ソード、ペンタクルの偏り</li>
+<li>大アルカナの枚数</li>
+<li>正位置と逆位置の比率</li>
+<li>同じ数字やコートカードの重なり</li>
+<li>相性占いにおける温度、緊張、安定、明瞭さ、相互性</li>
+<li>ケルト十字における現在から結果までの連続性</li>
+</ul>
+<p dir="auto">この段階が、単なる「カード説明の横並び」と、スプレッドとしての鑑定を分ける部分です。</p>
+<h3 dir="auto">5. 行動へ落とし込む</h3>
+<p dir="auto">最後は「当たる・外れる」だけで閉じず、連絡頻度を確認する、期限を決める、条件を書き出す、休息を取るなど、利用者が現実で試せる一歩へつなげます。</p>
+<h2 dir="auto">辞典コンテンツの構成</h2>
+<p dir="auto">全78枚の辞典は、短い基本意味と長い学習プロフィールを分離しています。占い結果では短文を使い、辞典では次の章を深く読めます。</p>
+<ul dir="auto">
+<li>大切な3ポイント</li>
+<li>世界観・人物像</li>
+<li>絵柄の象徴</li>
+<li>他カードとの物語的関係</li>
+<li>リーディング上達のコツ</li>
+<li>ブレインマップ</li>
+<li>正位置の意味・性質・助言</li>
+<li>逆位置の意味・性質・助言</li>
+<li>成長テーマと内省の問い</li>
+<li>恋愛、仕事、金運、人間関係それぞれの正位置・逆位置</li>
+</ul>
+<p dir="auto">参考資料や解説サイトは、論点、象徴、読みの幅を確認するために使います。著作権のある文章や図版をコピーせず、アプリ内の文章は独自に編集します。カード画像は、Wikimedia Commonsで公開されているRider-Waite-Smith系のパブリックドメイン画像を使用しています。</p>
+<h2 dir="auto">技術構成</h2>
+<markdown-accessiblity-table><table role="table">
+<thead>
+<tr>
+<th>領域</th>
+<th>採用技術・方針</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>アプリ</td>
+<td>Expo SDK 54 / React Native 0.81 / React 19 / TypeScript</td>
+</tr>
+<tr>
+<td>UI</td>
+<td>React Native、expo-linear-gradient、react-native-svg</td>
+</tr>
+<tr>
+<td>カード画像</td>
+<td>アプリへ同梱した全78枚の画像資産</td>
+</tr>
+<tr>
+<td>鑑定</td>
+<td>TypeScriptで実装した端末内ルールベース合成</td>
+</tr>
+<tr>
+<td>保存</td>
+<td>AsyncStorageによる端末内保存</td>
+</tr>
+<tr>
+<td>課金</td>
+<td>expo-iap経由のApple StoreKit、非消耗型商品</td>
+</tr>
+<tr>
+<td>ビルド</td>
+<td>EAS Build</td>
+</tr>
+<tr>
+<td>配布</td>
+<td>TestFlight / App Store Connect</td>
+</tr>
+<tr>
+<td>公開ページ</td>
+<td>GitHub Pages上のサポート・プライバシーポリシー</td>
+</tr>
+</tbody>
+</table></markdown-accessiblity-table>
+<pre lang="mermaid">flowchart LR
+  UI["App.tsx / 画面と操作"] --&gt; READ["readings.ts / 鑑定生成"]
+  UI --&gt; DICT["dictionaryProfiles / 辞典"]
+  READ --&gt; CARD["cards.ts / 78枚の基本データ"]
+  READ --&gt; SYN["spreadSynthesis.ts / 全体傾向"]
+  UI --&gt; STORE["history.ts / AsyncStorage"]
+  UI --&gt; PRO["useProEntitlement"]
+  PRO --&gt; IAP["expo-iap / StoreKit"]
+  STORE --&gt; DEVICE["利用者のiPhone内だけ"]
+</pre>
+
+<p dir="auto"><code class="notranslate">App.tsx</code>が画面、タブ、入力、結果表示を担当し、鑑定ロジックは<code class="notranslate">src/lib/readings.ts</code>、全体傾向は<code class="notranslate">src/lib/spreadSynthesis.ts</code>、辞典は<code class="notranslate">src/data</code>配下へ分離しています。現在は単一画面ファイルが大きいため、公開後の保守では画面単位のコンポーネント分割が次の技術改善候補です。</p>
+<h2 dir="auto">AIを使った開発ワークフロー</h2>
+<p dir="auto">このプロジェクトでは、AIへ一度だけ「アプリを作って」と依頼したのではなく、iPhoneで実際に使い、違和感を見つけ、仕様へ戻して直す反復を続けています。</p>
+<h3 dir="auto">段階1: 企画を言葉で固める</h3>
+<p dir="auto">対象ユーザー、カード範囲、必要な辞典項目、4枚引きの位置、無料版の範囲を会話で決めました。最初から全78枚や課金を入れず、核となる体験を明文化したことが土台になっています。</p>
+<h3 dir="auto">段階2: コンテンツと読み筋を設計する</h3>
+<p dir="auto">カード単体の意味だけでなく、正逆、質問分野、位置、複数枚の関係をデータとルールへ落としました。Claudeによる大規模な内容改修も取り込み、その後にコードと画面の整合性をレビューしています。</p>
+<h3 dir="auto">段階3: 実装し、iPhoneで違和感を見つける</h3>
+<p dir="auto">Expo GoとTestFlightを使い、画像、長文の切れ、キーボード、ケルト十字の配置、鑑定の具体性、否定的に感じる表現などを実機で確認しました。違和感を単なる感想で終わらせず、表示ロジック、文章生成、画面構造の修正へ戻しています。</p>
+<h3 dir="auto">段階4: 品質と権利を整える</h3>
+<p dir="auto">型検査、Expo診断、iOS/Web書き出し、画像クレジット、プライバシーポリシー、個人データを含まないスクリーンショットを確認しました。外部サイトの文章や現代デッキ画像をそのまま使わない方針も、この段階で明確にしています。</p>
+<h3 dir="auto">段階5: 課金とApp Store公開へつなぐ</h3>
+<p dir="auto">買い切りPro、購入復元、EAS本番ビルド、App Store Connect、TestFlight、サポートURL、審査用素材を整備しました。実装が終わってから公開方法を考えるのではなく、審査、権利、プライバシー、決済をプロダクトの一部として扱っています。</p>
+<h2 dir="auto">役割分担</h2>
+<markdown-accessiblity-table><table role="table">
+<thead>
+<tr>
+<th>担当</th>
+<th>主な役割</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>プロダクトオーナー</td>
+<td>目標、利用者視点、占い品質の基準、実機での違和感を提示する</td>
+</tr>
+<tr>
+<td>Claude</td>
+<td>大量コンテンツの再構成や文章の全面改修を進める</td>
+</tr>
+<tr>
+<td>Codex</td>
+<td>コードベースを調査し、実装、レビュー、修正、検証、課金・公開準備を一貫して進める</td>
+</tr>
+<tr>
+<td>Expo / EAS</td>
+<td>開発サーバー、iOSビルド、提出を支える</td>
+</tr>
+<tr>
+<td>Apple</td>
+<td>StoreKit、TestFlight、App Store審査と配布を担う</td>
+</tr>
+</tbody>
+</table></markdown-accessiblity-table>
+<p dir="auto">AIの役割を固定しすぎず、得意な粒度で使い分ける一方、最終的な品質基準は実際にアプリを使う人間側が持ちます。特に占い文は、文法的に正しいだけでは十分ではなく、具体性、温度、納得感、読み終えた後の感情まで実機で確認します。</p>
+<h2 dir="auto">品質確認のワークフロー</h2>
+<pre lang="mermaid">flowchart LR
+  E["仕様・文章・UIを修正"] --&gt; T["TypeScript型検査"]
+  T --&gt; X["Expo診断と書き出し"]
+  X --&gt; P["Expo Goで画面確認"]
+  P --&gt; F["TestFlightで実機・課金確認"]
+  F --&gt; R["App Store審査"]
+  P --&gt;|"違和感・不具合"| E
+  F --&gt;|"購入・復元の問題"| E
+</pre>
+
+<p dir="auto">基本確認コマンドは次の通りです。</p>
+<div class="highlight highlight-source-shell" dir="auto"><pre class="notranslate">npm run typecheck
+npm run release:check
+npx expo-doctor
+npx expo <span class="pl-k">export</span> --platform web</pre></div>
+<p dir="auto">画面内容はExpo Goで確認できます。ただし、実際のPro購入、購入完了、購入復元はネイティブのStoreKitが必要なため、TestFlightまたは開発ビルドで確認します。</p>
+<h2 dir="auto">プライバシーと安全性の前提</h2>
+<ul dir="auto">
+<li>会員登録、氏名、メールアドレス、位置情報、連絡先を取得しない。</li>
+<li>相談テーマ、占い結果、内省メモは端末内だけに保存する。</li>
+<li>広告、アクセス解析、トラッキングを初期リリースへ入れない。</li>
+<li>実行時に質問をGPTや運営者のサーバーへ送信しない。</li>
+<li>利用者がOSの共有先を確定した場合だけ、選択した相手へ結果が渡る。</li>
+<li>履歴はアプリ内で削除でき、アプリを削除した場合も端末から消える。</li>
+<li>医療、法律、投資など重要な判断を占いだけで決めないよう明示する。</li>
+</ul>
+<h2 dir="auto">現在の公開状況</h2>
+<p dir="auto">2026年8月18日時点では、次の準備と提出が完了しています。</p>
+<ul dir="auto">
+<li>Apple Developer Programの有効化</li>
+<li>Bundle IDとEASプロジェクトの確定</li>
+<li>サポートページとプライバシーポリシーの公開</li>
+<li>App Store Connectのアプリレコード作成</li>
+<li>本番iOSビルド10とApp Store Connectへの提出</li>
+<li>TestFlight内部テストの設定</li>
+<li>App Store用スクリーンショット5枚の登録</li>
+<li>買い切りPro商品の作成、価格、審査用画像の設定</li>
+<li>アプリ本体バージョン1.0.0と買い切りPro商品の同時審査提出</li>
+</ul>
+<p dir="auto">現在、アプリ本体と買い切りPro商品はAppleの審査待ちです。初期配信地域は日本に限定し、日本語版で利用体験と課金動作を確認してから、英語化と配信地域の拡大を検討します。</p>
+<p dir="auto">公開までに残る主な作業は次の通りです。</p>
+<ol dir="auto">
+<li>Appleの審査結果を待ち、指摘があれば内容を確認して対応する。</li>
+<li>承認後、日本のApp Storeで商品ページ、ダウンロード、Pro購入を確認する。</li>
+<li>公開後の不具合、レビュー、Pro購入率を観察し、最初のアップデートへ反映する。</li>
+</ol>
+<h2 dir="auto">今後の改善候補</h2>
+<h3 dir="auto">鑑定品質</h3>
+<ul dir="auto">
+<li>同じカードでも質問の期限や関係段階によって表現をさらに細分化する</li>
+<li>カード同士の組み合わせパターンを増やす</li>
+<li>結論、根拠、注意点、具体策の重複を自動検査する</li>
+<li>肯定・否定の偏り、途中で切れた文章、抽象語の多さをテストデータで検出する</li>
+</ul>
+<h3 dir="auto">体験</h3>
+<ul dir="auto">
+<li>お気に入りカード</li>
+<li>テーマ別の質問テンプレート</li>
+<li>履歴の検索とタグ</li>
+<li>文字サイズや読み上げを含むアクセシビリティ改善</li>
+</ul>
+<h3 dir="auto">技術</h3>
+<ul dir="auto">
+<li>大きくなった<code class="notranslate">App.tsx</code>を画面単位に分割する</li>
+<li>鑑定ロジックへ自動テストを追加する</li>
+<li>78枚すべての辞典項目と画像対応を機械検査する</li>
+<li>課金権利の確認方法を、将来のクロスデバイス利用に合わせて強化する</li>
+</ul>
+<p dir="auto">外部AIによる自由文鑑定を将来追加する場合は、明示的な同意、送信内容の確認、通信失敗時の扱い、利用料金、プライバシーポリシーとApp Privacy回答の更新が必要です。現在の「相談内容が端末外へ出ない」という価値を損なわないよう、既存の端末内鑑定とは分離して設計します。</p>
+<h2 dir="auto">まとめ</h2>
+<p dir="auto"><code class="notranslate">はじめてのタロット</code>の開発で重要だったのは、AIに一度で完成品を作らせることではなく、次の順番を守ったことです。</p>
+<ol dir="auto">
+<li>誰のどんな困りごとを解決するかを言葉で決める。</li>
+<li>必要な機能とコンテンツの範囲を決める。</li>
+<li>辞典、質問、カード、スプレッド、結果の関係を構造化する。</li>
+<li>実機で使い、文章と操作の違和感を仕様へ戻す。</li>
+<li>権利、プライバシー、課金、審査まで含めて公開品質へ整える。</li>
+</ol>
+<p dir="auto">AIは企画、文章、実装、レビュー、公開準備を高速化できます。しかし、利用者が結果を読んだときに「自分の状況を整理できた」「次に何をすればよいか分かった」と感じるかどうかは、実際の利用体験を何度も見直すことでしか磨けません。この反復そのものが、アプリの新規性と品質を育てる中心ワークフローです。</p>
+      </article>
+      <aside class="toc" aria-label="目次">
+        <strong>CONTENTS</strong>
+        <nav id="toc"></nav>
+      </aside>
+    </main>
+    <footer>
+      <p>&copy; 2026 はじめてのタロット</p>
+      <p><a href="./support-ja.html">サポート</a> &nbsp; / &nbsp; <a href="./privacy-policy-ja.html">プライバシーポリシー</a></p>
+    </footer>
+    <script>
+      const headings = [...document.querySelectorAll('#article-body h2')];
+      const toc = document.querySelector('#toc');
+      headings.forEach((heading, index) => {
+        const id = `section-${index + 1}`;
+        heading.id = id;
+        const link = document.createElement('a');
+        link.href = `#${id}`;
+        link.textContent = heading.textContent;
+        toc.appendChild(link);
+      });
+    </script>
+    <script type="module">
+      import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+      const diagrams = [...document.querySelectorAll('pre[lang="mermaid"]')];
+      diagrams.forEach((pre) => {
+        const container = document.createElement('div');
+        container.className = 'mermaid';
+        container.textContent = pre.textContent;
+        pre.replaceWith(container);
+      });
+      mermaid.initialize({ startOnLoad: true, theme: 'neutral', securityLevel: 'strict' });
+    </script>
+  </body>
+</html>
