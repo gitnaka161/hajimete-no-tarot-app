@@ -117,6 +117,7 @@
         font: inherit;
         font-weight: 700;
         cursor: pointer;
+        text-decoration: none;
       }
 
       .contact-button:focus-visible {
@@ -144,7 +145,12 @@
         <p>
           不具合報告、改善要望、その他のお問い合わせは、次のメール窓口からお送りください。
         </p>
-        <button class="contact-button" id="support-email" type="button">メールで問い合わせる</button>
+        <a
+          class="contact-button"
+          id="support-email"
+          href="&#109;&#97;&#105;&#108;&#116;&#111;&#58;&#110;&#97;&#107;&#97;&#116;&#97;&#49;&#54;&#50;&#64;&#104;&#111;&#116;&#109;&#97;&#105;&#108;&#46;&#99;&#111;&#109;?subject=%E3%81%AF%E3%81%98%E3%82%81%E3%81%A6%E3%81%AE%E3%82%BF%E3%83%AD%E3%83%83%E3%83%88%20%E3%81%8A%E5%95%8F%E3%81%84%E5%90%88%E3%82%8F%E3%81%9B"
+          >メールで問い合わせる</a
+        >
 
         <h3>よくある質問</h3>
         <ul>
@@ -161,11 +167,5 @@
         </p>
       </section>
     </main>
-    <script>
-      document.querySelector("#support-email").addEventListener("click", () => {
-        const address = ["nakata162", "hotmail.com"].join("@");
-        window.location.href = `mailto:${address}?subject=${encodeURIComponent("はじめてのタロット お問い合わせ")}`;
-      });
-    </script>
   </body>
 </html>
