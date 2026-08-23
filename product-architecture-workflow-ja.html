@@ -3,14 +3,14 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="AIとの対話を重ねながら、タロットアプリを企画、実装、実機テスト、課金、App Store審査まで育てた開発記録です。" />
-    <meta property="og:title" content="AIとの対話で「はじめてのタロット」をApp Store公開まで育てる" />
-    <meta property="og:description" content="企画、UX、鑑定ロジック、技術構成、実機テスト、課金、審査までの開発ストーリー。" />
+    <meta name="description" content="Claude Designで画面を設計し、Codexで実装。タロットアプリを企画、実機テスト、課金、App Store審査まで育てた開発記録です。" />
+    <meta property="og:title" content="Claude Design × Codexで「はじめてのタロット」をApp Storeへ" />
+    <meta property="og:description" content="Claude Designの画面レビューとCodexの実装を往復し、iPhoneアプリを公開品質へ育てた開発ストーリー。" />
     <meta property="og:type" content="article" />
     <meta property="og:locale" content="ja_JP" />
     <meta property="og:url" content="https://gitnaka161.github.io/hajimete-no-tarot-app/product-architecture-workflow-ja.html" />
     <link rel="canonical" href="https://gitnaka161.github.io/hajimete-no-tarot-app/product-architecture-workflow-ja.html" />
-    <title>AIとの対話で「はじめてのタロット」をApp Store公開まで育てる</title>
+    <title>Claude Design × Codexで「はじめてのタロット」をApp Storeへ</title>
     <style>
       :root {
         --night: #251510;
@@ -238,7 +238,7 @@
       @media (max-width: 540px) {
         body { line-height: 1.85; }
         .masthead-inner { padding-bottom: 54px; }
-        h1 { font-size: 2.12rem; }
+        h1 { font-size: 1.72rem; line-height: 1.4; letter-spacing: -0.035em; }
         .article { padding: 26px 20px 40px; border-radius: 2px 20px 2px 20px; }
         .article h2 { margin-top: 2.6em; font-size: 1.55rem; }
         .article p, .article li { font-size: 0.96rem; }
@@ -250,24 +250,21 @@
       <div class="masthead-inner">
         <a class="back" href="./index.html">&larr; 公式ページへ戻る</a>
         <p class="eyebrow">Product story / 2026</p>
-        <h1>AIとの対話で<br />「はじめてのタロット」を<br />App Store公開まで育てる</h1>
-        <p class="lead">企画から辞典、鑑定ロジック、実機テスト、買い切り課金、App Store審査まで。AIと対話しながら、一つのアプリを公開品質へ近づけた記録です。</p>
+        <h1>Claude Design × Codexで<br />「はじめてのタロット」を<br />App Storeへ</h1>
+        <p class="lead">Claude Designで画面を設計し、Codexで既存コードへ実装する。企画、実機テスト、買い切り課金、App Store審査までを往復した開発記録です。</p>
         <div class="meta">
           <span>React Native / Expo</span>
           <span>TypeScript</span>
           <span>StoreKit</span>
-          <span>AI-assisted development</span>
+          <span>Claude Design × Codex</span>
         </div>
       </div>
     </header>
     <main class="layout">
       <article class="article" id="article-body">
-        <p dir="auto">この資料は、梶谷健人さんのX記事「Claude Design × Claude Code × Codexで、Biz職でも凝ったスマホアプリは作れる」の構成を参考にしながら、<code class="notranslate">はじめてのタロット</code>の企画、UX、機能、鑑定ロジック、技術構成、開発ワークフロー、公開準備を独自に整理したものです。</p>
-<ul dir="auto">
-<li>参考記事: <a href="https://x.com/kajikent/status/2054709418638676386" rel="nofollow">https://x.com/kajikent/status/2054709418638676386</a></li>
-<li>詳細版: <a href="https://note.com/kajiken0630/n/n7adcefdbc1e7" rel="nofollow">https://note.com/kajiken0630/n/n7adcefdbc1e7</a></li>
-</ul>
-<p dir="auto">文章や画像を転載するのではなく、<code class="notranslate">前提 → 全体像 → UX設計 → ワークフロー → 役割分担 → 補足</code>という読みやすい構成だけを参考にしています。</p>
+        <p dir="auto">最終更新: 2026年8月23日</p>
+<p dir="auto">スマホアプリを作るには、企画、画面設計、実装、実機確認、課金、ストア審査という、性質の異なる仕事をつなぐ必要があります。<code class="notranslate">はじめてのタロット</code>では、そのすべてを一つのAIへ丸投げするのではなく、Claude Designで画面と体験を可視化し、Codexで既存コードへ実装し、iPhoneで確かめて再び設計へ戻す方法を取りました。</p>
+<p dir="auto">この記事では、会話から始まった小さな企画が、全78枚の辞典、複数の占い、端末内履歴、買い切りProを備えたiPhoneアプリになるまでを、プロダクト設計と実装ワークフローの両面から紹介します。</p>
 <h2 dir="auto">前提: 今回作ったもの</h2>
 <p dir="auto"><code class="notranslate">はじめてのタロット</code>は、タロット全78枚の意味を学びながら、1枚引きからケルト十字まで段階的に占える日本語のiPhoneアプリです。</p>
 <p dir="auto">一言で表すと、次のようなアプリです。</p>
@@ -275,7 +272,7 @@
 <p dir="auto">カードの意味を調べる辞典と、カード同士のつながりまで読む占いを、静かに一つの端末で完結できるタロットアプリ。</p>
 </blockquote>
 <p dir="auto">最初の企画は大アルカナ22枚と1枚引き・4枚引きでした。その後、実機テストと内容レビューを繰り返し、現在は小アルカナを含む全78枚、複数スプレッド、履歴、内省メモ、買い切りProまで拡張しています。</p>
-<p dir="auto">技術スタックは、<code class="notranslate">TypeScript / React Native / Expo SDK 54</code>でアプリを実装し、<code class="notranslate">EAS Build</code>でiOSアプリをビルド、<code class="notranslate">TestFlight</code>で実機配布する構成です。履歴や相談テーマは<code class="notranslate">AsyncStorage</code>でiPhone内に保存し、買い切りProだけを<code class="notranslate">expo-iap</code>経由でAppleの<code class="notranslate">StoreKit</code>へ接続しています。鑑定は外部の生成AIやサーバーを呼び出さず、全78枚のデータとTypeScriptの合成ロジックだけで端末内生成します。</p>
+<p dir="auto">技術スタックは、<code class="notranslate">TypeScript / React Native / Expo SDK 54</code>でアプリを実装し、<code class="notranslate">EAS Build</code>でiOSアプリをビルド、<code class="notranslate">TestFlight</code>で実機配布する構成です。履歴や相談テーマは<code class="notranslate">AsyncStorage</code>でiPhone内に保存し、買い切りProだけを<code class="notranslate">expo-iap</code>経由でAppleの<code class="notranslate">StoreKit</code>へ接続しています。鑑定は外部の生成AIやサーバーを呼び出さず、全78枚のデータとTypeScriptの合成ロジックだけで端末内生成します。AIを使うのは開発時であり、利用者が入力した相談内容をAIへ送るアプリではありません。</p>
 <pre lang="mermaid">flowchart LR
   APP["React Native / Expo"] --&gt; LOGIC["TypeScript鑑定ロジック"]
   APP --&gt; LOCAL["AsyncStorage / 端末内履歴"]
@@ -316,21 +313,23 @@
 <li>過去・現在・未来・助言の4枚引き</li>
 <li>Yes / No</li>
 <li>あなた・相手・二人の関係を読む3枚の相性占い</li>
-<li>正式な十字と杖の配置で表示する10枚のケルト十字</li>
+<li>正式な十字と杖の配置で表示する10枚のケルト十字（無料では結論・主要3位置・行動提案）</li>
 <li>占い結果への気づきメモ</li>
 <li>結果の共有</li>
 <li>端末内履歴24件と、直近の逆位置傾向の振り返り</li>
 </ul>
 <h3 dir="auto">買い切りProで追加される機能</h3>
 <ul dir="auto">
-<li>7枚で二つの選択肢を比較する「選択の天秤」</li>
-<li>12枚で各月の流れを見る「一年の扉」</li>
+<li>ケルト十字の10位置すべてと総合傾向をつなぐ詳細鑑定</li>
+<li>推進力・注意条件・判断基準から二つの選択肢を比較する「選択の天秤」</li>
+<li>各月に加え、転換点、前半から後半、四半期の焦点まで読む「一年の扉」</li>
 <li>端末内履歴の上限を24件から120件へ拡張</li>
 <li>サブスクリプションではなく、一度購入すれば継続利用できる非消耗型課金</li>
 </ul>
+<p dir="auto">ケルト十字の詳細鑑定は、インストールごとに1件だけ無料で試せます。体験対象にした鑑定は履歴から再読できます。</p>
 <p dir="auto">商品IDは<code class="notranslate">hajimete_tarot_pro_lifetime</code>です。価格表示はアプリへ固定せず、StoreKitから利用者の地域に合う表示価格を取得します。</p>
 <h2 dir="auto">情報設計</h2>
-<p dir="auto">アプリの下部ナビゲーションは、利用目的をそのまま入口にしています。</p>
+<p dir="auto">アプリの下部ナビゲーションは、Claude Designの画面レビューを受けて、横スクロールする7項目から固定4タブへ再編しました。機能名をすべて並べるのではなく、利用目的を入口にしています。</p>
 <markdown-accessiblity-table><table role="table">
 <thead>
 <tr>
@@ -344,31 +343,20 @@
 <td>今日の一枚、最新結果、主要機能への入口</td>
 </tr>
 <tr>
+<td>占う</td>
+<td>1枚引き、4枚引き、Yes / No、相性、ケルト十字、Proスプレッドを選ぶ</td>
+</tr>
+<tr>
 <td>辞典</td>
 <td>78枚の検索と詳細学習</td>
-</tr>
-<tr>
-<td>1枚引き</td>
-<td>一つのテーマを短く読む</td>
-</tr>
-<tr>
-<td>4枚引き</td>
-<td>時間の流れと助言を読む</td>
-</tr>
-<tr>
-<td>展開</td>
-<td>Yes / No、相性、ケルト十字を選ぶ</td>
 </tr>
 <tr>
 <td>履歴</td>
 <td>過去の結果、メモ、傾向を振り返る</td>
 </tr>
-<tr>
-<td>Pro</td>
-<td>追加スプレッド、購入、復元を扱う</td>
-</tr>
 </tbody>
 </table></markdown-accessiblity-table>
+<p dir="auto">Proは独立タブにせず、対象スプレッドのロック表示やホームから自然に案内します。ホームもストア紹介文から始めるのではなく、<code class="notranslate">今日の一枚 → 占ってみる → 最近の結果</code>の順に変え、最初の一操作までを短くしました。</p>
 <pre lang="mermaid">flowchart LR
   H["ホーム"] --&gt; D["辞典で学ぶ"]
   H --&gt; Q["質問を入力する"]
@@ -387,7 +375,7 @@
 <p dir="auto">利用者のゴールは「未来を言い当ててもらうこと」だけではありません。カードを通して状況を整理し、自分が動かせる部分を見つけることです。</p>
 <p dir="auto">プロダクト側のゴールは、無料でも十分役立つ辞典と占いを提供し、もっと深く継続して使いたい人にだけ買い切りProを選んでもらうことです。</p>
 <h3 dir="auto">Scope: 何を提供するか</h3>
-<p dir="auto">初期リリースでは、辞典、主要5スプレッド、履歴、メモ、共有を無料範囲としました。Proは無料機能を不自然に削るのではなく、枚数が多く設計も複雑な2スプレッドと履歴拡張を追加します。</p>
+<p dir="auto">無料範囲だけでも結論と行動へ到達できることを守り、Proでは同じカードをさらに分析する層を追加します。ケルト十字は無料でも結論・主要3位置・行動提案まで読め、Proでは10位置すべての関係と総合傾向を開きます。加えて、専用比較を行う2スプレッドと履歴拡張を提供します。</p>
 <p dir="auto">会員登録、広告、解析SDK、通知、クラウド同期、実行時の生成AI通信は入れていません。機能を増やすより、鑑定文の一貫性、読みやすさ、プライバシーを優先しています。</p>
 <h3 dir="auto">Structure: どう流れるか</h3>
 <p dir="auto">質問入力から結果までの基本構造は、すべての占いで共通です。</p>
@@ -404,15 +392,17 @@
 <ul dir="auto">
 <li>最初に要約を置き、結論を探して長文をさまよわなくてよい構成にする。</li>
 <li>各位置には番号、役割、カード名、正逆を常に表示する。</li>
+<li>結果は「やさしく」で結論と主要な根拠を先に見せ、「くわしく」で残りの位置や全体傾向を段階的に開く。</li>
 <li>4枚引きは上段に助言、下段に過去・現在・未来を配置する。</li>
 <li>ケルト十字は1〜6枚の十字と7〜10枚の杖を実際の展開形で表示する。</li>
-<li>長い鑑定は見出し単位に分け、具体的な読み筋と行動案を分離する。</li>
+<li>長い鑑定は見出し単位に分け、主要位置を初期表示し、「ほかのN枚も読む」で詳細を開く。</li>
+<li>「今日の一歩」を独立したカードにし、鑑定を現実の行動へつなぐ。</li>
 <li>質問欄ではiPhoneのキーボード表示を考慮し、実行時にキーボードを閉じる。</li>
-<li>辞典は章ジャンプとブレインマップを備え、長文でも目的の項目へ移動できるようにする。</li>
+<li>辞典は、かな・漢字・英語名・カード番号から探せる検索、章ジャンプ、ブレインマップを備え、長文でも目的の項目へ移動できるようにする。</li>
 </ul>
 <h3 dir="auto">Surface: どう感じてもらうか</h3>
-<p dir="auto">濃い茶、生成り、金色を基調とした紙面調の画面に、Rider-Waite-Smith系のカード画像を組み合わせています。神秘性は残しつつ、怖さや過剰な装飾よりも「落ち着いて読めること」を優先しています。</p>
-<p dir="auto">逆位置や厳しい結果では、意味を薄めて楽観的にするのではなく、現状の課題と変更可能な行動をセットで示します。利用者を落ち込ませず、同時に根拠のない安心も与えないトーンを目指しています。</p>
+<p dir="auto">濃い茶、生成り、金色を基調とした紙面調の画面に、Rider-Waite-Smith系のカード画像を組み合わせています。Claude Designで作った「やさしい紙面」の方向性をもとに、神秘性は残しつつ、怖さや過剰な装飾よりも「落ち着いて読めること」を優先しました。</p>
+<p dir="auto">正位置と逆位置は警告色で分けず、同じ中立色のラベルで表示します。逆位置や厳しい結果では、意味を薄めて楽観的にするのではなく、現状の課題と変更可能な行動をセットで示します。利用者を落ち込ませず、同時に根拠のない安心も与えないトーンを目指しています。</p>
 <h2 dir="auto">鑑定生成のワークフロー</h2>
 <p dir="auto">このアプリは、利用時にGPTや外部AIへ質問を送って鑑定しているわけではありません。78枚の独自データと、スプレッド別のルールを端末上で組み合わせて文章を生成します。</p>
 <pre lang="mermaid">flowchart TD
@@ -526,19 +516,55 @@
   STORE --&gt; DEVICE["利用者のiPhone内だけ"]
 </pre>
 
-<p dir="auto"><code class="notranslate">App.tsx</code>が画面、タブ、入力、結果表示を担当し、鑑定ロジックは<code class="notranslate">src/lib/readings.ts</code>、全体傾向は<code class="notranslate">src/lib/spreadSynthesis.ts</code>、辞典は<code class="notranslate">src/data</code>配下へ分離しています。現在は単一画面ファイルが大きいため、公開後の保守では画面単位のコンポーネント分割が次の技術改善候補です。</p>
-<h2 dir="auto">AIを使った開発ワークフロー</h2>
-<p dir="auto">このプロジェクトでは、AIへ一度だけ「アプリを作って」と依頼したのではなく、iPhoneで実際に使い、違和感を見つけ、仕様へ戻して直す反復を続けています。</p>
-<h3 dir="auto">段階1: 企画を言葉で固める</h3>
-<p dir="auto">対象ユーザー、カード範囲、必要な辞典項目、4枚引きの位置、無料版の範囲を会話で決めました。最初から全78枚や課金を入れず、核となる体験を明文化したことが土台になっています。</p>
-<h3 dir="auto">段階2: コンテンツと読み筋を設計する</h3>
-<p dir="auto">カード単体の意味だけでなく、正逆、質問分野、位置、複数枚の関係をデータとルールへ落としました。Claudeによる大規模な内容改修も取り込み、その後にコードと画面の整合性をレビューしています。</p>
-<h3 dir="auto">段階3: 実装し、iPhoneで違和感を見つける</h3>
-<p dir="auto">Expo GoとTestFlightを使い、画像、長文の切れ、キーボード、ケルト十字の配置、鑑定の具体性、否定的に感じる表現などを実機で確認しました。違和感を単なる感想で終わらせず、表示ロジック、文章生成、画面構造の修正へ戻しています。</p>
-<h3 dir="auto">段階4: 品質と権利を整える</h3>
-<p dir="auto">型検査、Expo診断、iOS/Web書き出し、画像クレジット、プライバシーポリシー、個人データを含まないスクリーンショットを確認しました。外部サイトの文章や現代デッキ画像をそのまま使わない方針も、この段階で明確にしています。</p>
-<h3 dir="auto">段階5: 課金とApp Store公開へつなぐ</h3>
-<p dir="auto">買い切りPro、購入復元、EAS本番ビルド、App Store Connect、TestFlight、サポートURL、審査用素材を整備しました。実装が終わってから公開方法を考えるのではなく、審査、権利、プライバシー、決済をプロダクトの一部として扱っています。</p>
+<p dir="auto"><code class="notranslate">App.tsx</code>が画面、タブ、入力、結果表示を担当し、鑑定ロジックは<code class="notranslate">src/lib/readings.ts</code>、全体傾向は<code class="notranslate">src/lib/spreadSynthesis.ts</code>、辞典は<code class="notranslate">src/data</code>配下へ分離しています。画面を直すときに鑑定ロジックを不用意に変えないよう、見た目、文章生成、保存、課金の境界を分けています。</p>
+<h2 dir="auto">Claude Design × Codexの開発ワークフロー</h2>
+<p dir="auto">このプロジェクトでは、AIへ一度だけ「アプリを作って」と依頼したのではありません。Claude Designをデザインレビューと画面設計に、Codexをコードベースの調査と実装に使い、最後は必ずiPhoneへ戻す反復を続けました。</p>
+<pre lang="mermaid">flowchart LR
+  O["要望と実機での違和感"] --&gt; CD["Claude Design / 画面案とレビュー"]
+  CD --&gt; H["優先度・数値・受け入れ条件を含む指示書"]
+  H --&gt; C["Codex / 既存コードへ実装"]
+  C --&gt; V["型検査・書き出し・リリース検査"]
+  V --&gt; I["Expo Go / TestFlightでiPhone確認"]
+  I --&gt; R["画面収録とスクリーンショット"]
+  R --&gt; CD
+  I --&gt; S["App Store提出素材へ反映"]
+</pre>
+
+<h3 dir="auto">段階1: 企画とコンテンツを言葉で固める</h3>
+<p dir="auto">対象ユーザー、カード範囲、必要な辞典項目、4枚引きの位置、無料版の範囲を会話で決めました。最初から全78枚や課金を前提にせず、まず「辞典で調べる」「1枚で読む」「4枚で流れを読む」という核を明文化しました。</p>
+<p dir="auto">カード単体の意味だけでなく、正逆、質問分野、スプレッド上の位置、複数枚の関係をデータとルールへ落としました。Claude / Claude Codeによる長文コンテンツの再構成も取り込み、Codexで型や参照関係、画面上の表示、占いロジックとの整合性を確認しています。</p>
+<h3 dir="auto">段階2: Codexで動くアプリへ変える</h3>
+<p dir="auto">Codexは、会話で決めた仕様を現在のリポジトリへ直接反映します。既存ファイルと未保存の変更を調べ、データ型、鑑定ロジック、画面、端末内保存をつなぎ、型検査と書き出しまで実行します。</p>
+<p dir="auto">この段階で大切だったのは、文章だけを増やすのではなく、同じカードでも質問と位置によって読み方が変わる構造を作ることでした。ケルト十字もカードを横一列に並べるのではなく、十字と杖の配置を画面幅の中で成立させています。</p>
+<h3 dir="auto">段階3: Claude Designで実画面を設計し直す</h3>
+<p dir="auto">機能が揃ったあと、App Store用スクリーンショットと約5分のiPhone画面収録をClaude Designへ渡しました。静止画では情報の階層と見た目を、動画ではスクロール量、キーボード、カードを引いた後の移動、購入状態など、操作して初めて分かる問題を確認しました。</p>
+<p dir="auto">レビュー結果は感想だけでなく、次のような実装可能な指示書にしました。</p>
+<ul dir="auto">
+<li>P0 / P1 / P2で優先順位を分ける。</li>
+<li>濃茶、生成り、金、赤茶など既存のデザイントークンを明記する。</li>
+<li>文字サイズ、余白、タップ領域、カード幅を数値で示す。</li>
+<li>変更してよい画面と、維持する鑑定ロジックを分ける。</li>
+<li>iPhoneの各サイズで確認できる受け入れ条件を書く。</li>
+</ul>
+<p dir="auto">ここから、固定ヘッダーと二重スクロール、横スクロールする7タブ、長文が同じ強さで続く結果画面、小さすぎるケルト十字、かなや番号で見つからない辞典検索、購入済み状態や地域別価格の表示といった課題が、具体的な改修項目になりました。</p>
+<h3 dir="auto">段階4: Codexでデザインを既存コードへ移植する</h3>
+<p dir="auto">Codexは指示書をそのまま上書きするのではなく、現在のReact Native実装と照合してから変更します。今回の改修では、主に次を反映しました。</p>
+<ul dir="auto">
+<li>下部ナビゲーションを<code class="notranslate">ホーム / 占う / 辞典 / 履歴</code>の固定4タブにする。</li>
+<li>ホームの先頭を「今日の一枚」にし、占いまでの距離を短くする。</li>
+<li>結果を<code class="notranslate">要約 → 主要な根拠 → 今日の一歩</code>の順にし、詳細は段階的に開く。</li>
+<li>「やさしく / くわしく」で読む深さを選べるようにする。</li>
+<li>正位置と逆位置を同じ中立色で示し、逆位置の4軸を補助情報として扱う。</li>
+<li>辞典検索を、かな、漢字、英語名、番号、スート名へ対応させる。</li>
+<li>Proの無料体験と詳細鑑定の境界を明確にし、StoreKitの地域別価格を表示する。</li>
+</ul>
+<p dir="auto">見た目の改修中も、<code class="notranslate">readings.ts</code>などの鑑定ロジックを守る範囲を決めました。デザインの改善が占い結果を意図せず変えないようにするためです。</p>
+<h3 dir="auto">段階5: iPhoneで確かめ、設計へ戻す</h3>
+<p dir="auto">Expo Goは画面や文章の素早い確認に、TestFlightはネイティブ課金と本番に近い動作確認に使い分けました。画像の品質、文章の途中切れ、質問入力中のキーボード、ケルト十字の配置、鑑定の具体性、否定的に感じる表現、購入と復元を実機で確認しています。</p>
+<p dir="auto">修正後も画面収録を取り直し、気になる場面を時系列のスクリーンショットにしてClaude Designへ戻しました。<code class="notranslate">デザイン → コード → 実機 → デザイン</code>の輪を閉じることで、モックだけ美しく、実際には読みにくい状態を避けています。</p>
+<h3 dir="auto">段階6: App Store公開を実装の一部として扱う</h3>
+<p dir="auto">型検査、Expo診断、iOS/Web書き出しに加え、画像の権利とクレジット、プライバシーポリシー、サポートページ、個人データを含まないストア画像、買い切りPro、購入復元、EAS本番ビルド、TestFlight、App Store Connectの審査情報まで整えました。</p>
+<p dir="auto">審査で説明が必要になったときも、実機動画、再現手順、修正版ビルド、審査メモを同じワークフローで更新します。「コードが動いたら完成」ではなく、利用者がストアから入手できるところまでをプロダクト開発に含めました。</p>
 <h2 dir="auto">役割分担</h2>
 <markdown-accessiblity-table><table role="table">
 <thead>
@@ -553,12 +579,16 @@
 <td>目標、利用者視点、占い品質の基準、実機での違和感を提示する</td>
 </tr>
 <tr>
-<td>Claude</td>
-<td>大量コンテンツの再構成や文章の全面改修を進める</td>
+<td>Claude Design</td>
+<td>画面案、情報の優先順位、実機動画レビュー、数値と受け入れ条件を含む実装指示を作る</td>
+</tr>
+<tr>
+<td>Claude / Claude Code</td>
+<td>辞典など大量コンテンツの再構成と文章レビューを補助する</td>
 </tr>
 <tr>
 <td>Codex</td>
-<td>コードベースを調査し、実装、レビュー、修正、検証、課金・公開準備を一貫して進める</td>
+<td>コードベースを調査し、設計を実装し、レビュー、修正、検証、課金・公開準備を一貫して進める</td>
 </tr>
 <tr>
 <td>Expo / EAS</td>
@@ -573,12 +603,14 @@
 <p dir="auto">AIの役割を固定しすぎず、得意な粒度で使い分ける一方、最終的な品質基準は実際にアプリを使う人間側が持ちます。特に占い文は、文法的に正しいだけでは十分ではなく、具体性、温度、納得感、読み終えた後の感情まで実機で確認します。</p>
 <h2 dir="auto">品質確認のワークフロー</h2>
 <pre lang="mermaid">flowchart LR
-  E["仕様・文章・UIを修正"] --&gt; T["TypeScript型検査"]
+  D["Claude Designの指示書"] --&gt; E["Codexが仕様・文章・UIを修正"]
+  E --&gt; T["TypeScript型検査"]
   T --&gt; X["Expo診断と書き出し"]
   X --&gt; P["Expo Goで画面確認"]
   P --&gt; F["TestFlightで実機・課金確認"]
+  F --&gt; V["画面収録をClaude Designで再確認"]
+  V --&gt;|"違和感・不具合"| D
   F --&gt; R["App Store審査"]
-  P --&gt;|"違和感・不具合"| E
   F --&gt;|"購入・復元の問題"| E
 </pre>
 
@@ -588,6 +620,34 @@ npm run release:check
 npx expo-doctor
 npx expo <span class="pl-k">export</span> --platform web</pre></div>
 <p dir="auto">画面内容はExpo Goで確認できます。ただし、実際のPro購入、購入完了、購入復元はネイティブのStoreKitが必要なため、TestFlightまたは開発ビルドで確認します。</p>
+<h2 dir="auto">出力品質を数値で確認する</h2>
+<p dir="auto">きっかけは、Pro版のスプレッドを使っても「課金する価値がどこにあるのか分かりにくい」と感じたことでした。印象だけで直すのではなく、まず中身を疑って同じ条件で大量生成したところ、曖昧な結論が57.0%を占めることが分かり、ロジックを作り直してからもう一度測りました。</p>
+<p dir="auto">占い文は、数件を目で読んだだけでは偏りを見抜けません。そこでProスプレッドを数万回生成し、「同じ曖昧な結論に寄りすぎていないか」「転換点が特定の月へ固定されていないか」を集計しました。これは占いの的中率を測るものではなく、壊れている状態を数値で特定し、直り具合を同じ条件で確かめるテストです。</p>
+<markdown-accessiblity-table><table role="table">
+<thead>
+<tr>
+<th>検査対象</th>
+<th>改修前</th>
+<th>改修後の再測定</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>選択の天秤が「差はありません」で終わる割合</td>
+<td>57.0%</td>
+<td>0.0%（30,000回）</td>
+</tr>
+<tr>
+<td>一年の扉の転換点</td>
+<td>6か月目に100%固定</td>
+<td>2〜12か月目へ分散、最大9.9%（10,000回）</td>
+</tr>
+</tbody>
+</table></markdown-accessiblity-table>
+<p dir="auto">選択の天秤では、総合点が拮抗する場合もあります。ただし改修後は、推進力、注意条件、判断基準、カードの性質のどこに違いがあるかを必ず示すため、「結局同じ」という結論では終わりません。</p>
+<p dir="auto">一年の扉では、転換点をカード間のスート、正逆、大アルカナ、数字の変化から選ぶようにしました。再測定した10,000回では、各候補月の出現率は8.3〜9.9%でした。</p>
+<p dir="auto">大量生成は、目視では気づきにくい実バグの発見にも役立ちました。転換点が12か月目になると転換カードと最終カードが同一になり、同じ月とカードを二度読み上げる問題が約1割で起きていました。最終月だけ文型を分ける修正後は、10,000回のうち12か月目が転換点になった969件すべてで重複が0件になりました。同時に、「2026年8月の月から始まり」のような月名とカード名の重なりも、「2026年8月は月のカードから始まり」へ直しています。</p>
+<p dir="auto">このように、違和感を仕様へ変えるだけでなく、壊れている状態を数値で特定し、修正後に同じ条件で測り直すところまでを品質確認に含めています。</p>
 <h2 dir="auto">プライバシーと安全性の前提</h2>
 <ul dir="auto">
 <li>会員登録、氏名、メールアドレス、位置情報、連絡先を取得しない。</li>
@@ -599,48 +659,32 @@ npx expo <span class="pl-k">export</span> --platform web</pre></div>
 <li>医療、法律、投資など重要な判断を占いだけで決めないよう明示する。</li>
 </ul>
 <h2 dir="auto">現在の公開状況</h2>
-<p dir="auto">2026年8月18日時点では、次の準備と提出が完了しています。</p>
+<p dir="auto">2026年8月23日時点で、次の作業が完了しています。</p>
 <ul dir="auto">
-<li>Apple Developer Programの有効化</li>
-<li>Bundle IDとEASプロジェクトの確定</li>
-<li>サポートページとプライバシーポリシーの公開</li>
-<li>App Store Connectのアプリレコード作成</li>
-<li>本番iOSビルド10とApp Store Connectへの提出</li>
-<li>TestFlight内部テストの設定</li>
-<li>App Store用スクリーンショット5枚の登録</li>
-<li>買い切りPro商品の作成、価格、審査用画像の設定</li>
-<li>アプリ本体バージョン1.0.0と買い切りPro商品の同時審査提出</li>
+<li>Apple Developer Programへの加入</li>
+<li>App Store Connectのアプリ情報、プライバシー、サポートURLの登録</li>
+<li>買い切り商品<code class="notranslate">はじめてのタロット Pro</code>の登録</li>
+<li>アプリ本体<code class="notranslate">1.0.0 (10)</code>とPro商品の初回審査提出</li>
+<li><code class="notranslate">Guideline 2.1 - Information Needed</code>によるbuild 10の却下</li>
+<li>Appleから求められた8項目への回答</li>
+<li>物理iPhoneで撮影した約5分の操作動画の送付</li>
+<li>Claude Designによる実機画面とストア画像のレビュー</li>
+<li>Codexによる4タブ化、結果画面、辞典検索、Pro境界などの改修</li>
+<li>修正版<code class="notranslate">1.0.0 (11)</code>、ストア画像5枚、審査メモの更新</li>
+<li>アプリ本体<code class="notranslate">1.0.0 (11)</code>とPro商品の再提出</li>
 </ul>
-<p dir="auto">現在、アプリ本体と買い切りPro商品はAppleの審査待ちです。初期配信地域は日本に限定し、日本語版で利用体験と課金動作を確認してから、英語化と配信地域の拡大を検討します。</p>
-<p dir="auto">公開までに残る主な作業は次の通りです。</p>
+<p dir="auto">最後に確認できた審査状態は、アプリ本体とPro商品の両方が<code class="notranslate">審査待ち</code>です。</p>
+<h2 dir="auto">今後の開発計画</h2>
 <ol dir="auto">
-<li>Appleの審査結果を待ち、指摘があれば内容を確認して対応する。</li>
-<li>承認後、日本のApp Storeで商品ページ、ダウンロード、Pro購入を確認する。</li>
-<li>公開後の不具合、レビュー、Pro購入率を観察し、最初のアップデートへ反映する。</li>
+<li>国内向けiPhone版を公開する（現在、App Store審査待ち）: 承認後、無料機能と買い切りProを日本で提供する。</li>
+<li>最初の更新で品質を安定させる: 実機で見つけた文章や表示を直し、自動テスト、購入復元、アクセシビリティを整える。</li>
+<li>ProにLLM連携を追加する: 利用者が希望した場合だけ相談内容とカードをLLMへ送り、端末内鑑定に、より文脈に沿った追加鑑定を重ねる。</li>
+<li>Proでリッチな鑑定書を提供する: 結論、カード配置、詳しい読み筋、行動案を一つの鑑定書にまとめ、保存や共有ができるようにする。</li>
+<li>海外向けに整備する: UI、78枚の辞典、鑑定文、ストア素材、サポート、プライバシーポリシーを英語化し、配信地域を広げる。</li>
+<li>Android版を展開する: 共通のReact Nativeコードを活かし、Google Playの課金、実機表示、ストア審査へ対応する。</li>
+<li>学びと振り返りを深める: お気に入りカード、履歴検索、タグ、質問テンプレートなどを追加する。</li>
 </ol>
-<h2 dir="auto">今後の改善候補</h2>
-<h3 dir="auto">鑑定品質</h3>
-<ul dir="auto">
-<li>同じカードでも質問の期限や関係段階によって表現をさらに細分化する</li>
-<li>カード同士の組み合わせパターンを増やす</li>
-<li>結論、根拠、注意点、具体策の重複を自動検査する</li>
-<li>肯定・否定の偏り、途中で切れた文章、抽象語の多さをテストデータで検出する</li>
-</ul>
-<h3 dir="auto">体験</h3>
-<ul dir="auto">
-<li>お気に入りカード</li>
-<li>テーマ別の質問テンプレート</li>
-<li>履歴の検索とタグ</li>
-<li>文字サイズや読み上げを含むアクセシビリティ改善</li>
-</ul>
-<h3 dir="auto">技術</h3>
-<ul dir="auto">
-<li>大きくなった<code class="notranslate">App.tsx</code>を画面単位に分割する</li>
-<li>鑑定ロジックへ自動テストを追加する</li>
-<li>78枚すべての辞典項目と画像対応を機械検査する</li>
-<li>課金権利の確認方法を、将来のクロスデバイス利用に合わせて強化する</li>
-</ul>
-<p dir="auto">外部AIによる自由文鑑定を将来追加する場合は、明示的な同意、送信内容の確認、通信失敗時の扱い、利用料金、プライバシーポリシーとApp Privacy回答の更新が必要です。現在の「相談内容が端末外へ出ない」という価値を損なわないよう、既存の端末内鑑定とは分離して設計します。</p>
+<p dir="auto">LLM連携を導入する場合は、送信する内容を事前に示して利用者の同意を得ること、通信失敗時も端末内鑑定を読めること、利用料金と回数制限を分かりやすくすること、プライバシーポリシーとApp Storeの申告を更新することを前提にします。</p>
 <h2 dir="auto">まとめ</h2>
 <p dir="auto"><code class="notranslate">はじめてのタロット</code>の開発で重要だったのは、AIに一度で完成品を作らせることではなく、次の順番を守ったことです。</p>
 <ol dir="auto">
@@ -650,7 +694,14 @@ npx expo <span class="pl-k">export</span> --platform web</pre></div>
 <li>実機で使い、文章と操作の違和感を仕様へ戻す。</li>
 <li>権利、プライバシー、課金、審査まで含めて公開品質へ整える。</li>
 </ol>
-<p dir="auto">AIは企画、文章、実装、レビュー、公開準備を高速化できます。しかし、利用者が結果を読んだときに「自分の状況を整理できた」「次に何をすればよいか分かった」と感じるかどうかは、実際の利用体験を何度も見直すことでしか磨けません。この反復そのものが、アプリの新規性と品質を育てる中心ワークフローです。</p>
+<p dir="auto">AIは企画、文章、実装、レビュー、公開準備を高速化できます。しかし、利用者が結果を読んだときに「自分の状況を整理できた」「次に何をすればよいか分かった」と感じるかどうかは、実際の利用体験を何度も見直すことでしか磨けません。</p>
+<p dir="auto">Claude Designは、動いている画面を「どう見え、どう感じ、どこで迷うか」という設計へ戻してくれました。Codexは、その設計を既存コードの制約とつなぎ、動作確認とストア提出まで進めました。そして人間は、iPhoneを手にして違和感を言葉にし、どこまでを製品品質とするかを決めました。この三者の反復が、アプリを公開できる形へ育てる中心ワークフローです。</p>
+<h2 dir="auto">参考記事</h2>
+<p dir="auto">この記事の構成を考える際に、梶谷健人さんの「Claude Design × Claude Code × Codexで、Biz職でも凝ったスマホアプリは作れる」を参考にしました。文章や画像を転載せず、開発の前提、全体像、ワークフロー、役割分担を順に伝える構成のみを参考にしています。</p>
+<ul dir="auto">
+<li><a href="https://x.com/kajikent/status/2054709418638676386" rel="nofollow">X掲載記事</a></li>
+<li><a href="https://note.com/kajiken0630/n/n7adcefdbc1e7" rel="nofollow">note詳細版</a></li>
+</ul>
       </article>
       <aside class="toc" aria-label="目次">
         <strong>CONTENTS</strong>

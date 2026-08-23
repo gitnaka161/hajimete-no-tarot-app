@@ -5,7 +5,7 @@
 ## 公開ページ
 
 - [公式ページ](https://gitnaka161.github.io/hajimete-no-tarot-app/)
-- [AIとの対話で「はじめてのタロット」をApp Store公開まで育てる](https://gitnaka161.github.io/hajimete-no-tarot-app/product-architecture-workflow-ja.html)
+- [Claude Design × Codexで「はじめてのタロット」をApp Storeへ](https://gitnaka161.github.io/hajimete-no-tarot-app/product-architecture-workflow-ja.html)
 - [サポート](https://gitnaka161.github.io/hajimete-no-tarot-app/support-ja.html)
 - [プライバシーポリシー](https://gitnaka161.github.io/hajimete-no-tarot-app/privacy-policy-ja.html)
 
