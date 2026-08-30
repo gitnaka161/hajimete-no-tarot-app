@@ -197,6 +197,23 @@
       .article th, .article td { padding: 0.75rem 0.85rem; border: 1px solid var(--line); text-align: left; }
       .article th { color: #59382b; background: #f2dfc8; }
       .article img { max-width: 100%; }
+      .architecture-figure { margin: 1.8rem 0; }
+      .architecture-figure a {
+        display: block;
+        overflow: hidden;
+        border: 1px solid var(--line);
+        border-radius: 18px;
+        background: #020617;
+        box-shadow: 0 14px 34px rgba(75, 48, 36, 0.12);
+      }
+      .architecture-figure img { display: block; width: 100%; height: auto; }
+      .architecture-figure figcaption {
+        margin-top: 0.75rem;
+        color: var(--muted);
+        font-family: "Hiragino Sans", "Yu Gothic", sans-serif;
+        font-size: 0.82rem;
+        line-height: 1.7;
+      }
       .mermaid {
         overflow-x: auto;
         margin: 1.7rem 0;
@@ -505,18 +522,12 @@
 </tr>
 </tbody>
 </table></markdown-accessiblity-table>
-<pre lang="mermaid">flowchart LR
-  UI["App.tsx / 画面と操作"] --&gt; READ["readings.ts / 鑑定生成"]
-  UI --&gt; DICT["dictionaryProfiles / 辞典"]
-  READ --&gt; CARD["cards.ts / 78枚の基本データ"]
-  READ --&gt; SYN["spreadSynthesis.ts / 全体傾向"]
-  UI --&gt; STORE["history.ts / AsyncStorage"]
-  UI --&gt; PRO["useProEntitlement"]
-  PRO --&gt; IAP["expo-iap / StoreKit"]
-  STORE --&gt; DEVICE["利用者のiPhone内だけ"]
-</pre>
-
+<figure class="architecture-figure">
+<a href="architecture/runtime-architecture-ja.html" aria-label="インタラクティブなランタイム構成図を開く"><img src="architecture/runtime-architecture-ja.svg" alt="利用者、React Nativeの画面、78枚の知識データ、鑑定合成、端末内保存、Pro課金とApple StoreKitの関係を示した『はじめてのタロット』のランタイム構成図" loading="lazy" decoding="async" /></a>
+<figcaption>実装コードを調査し、<a href="https://github.com/tt-a1i/archify">Archify</a>で作成したランタイム構成図です。画像を押すと、拡大・検索・明暗切替ができるインタラクティブ版を開きます。図中の内容は日本語、インタラクティブ版の固定操作UIは英語表示です。</figcaption>
+</figure>
 <p dir="auto"><code class="notranslate">App.tsx</code>が画面、タブ、入力、結果表示を担当し、鑑定ロジックは<code class="notranslate">src/lib/readings.ts</code>、全体傾向は<code class="notranslate">src/lib/spreadSynthesis.ts</code>、辞典は<code class="notranslate">src/data</code>配下へ分離しています。画面を直すときに鑑定ロジックを不用意に変えないよう、見た目、文章生成、保存、課金の境界を分けています。</p>
+<p dir="auto">図の大きな境界は、独自サーバーを持たず、辞典、鑑定、履歴、学習記録をiPhone内で完結させていることです。外部通信が必要なのは、買い切りProの購入と復元を<code class="notranslate">expo-iap</code>からApple StoreKitへ問い合わせる経路だけです。</p>
 <h2 dir="auto">Claude Design × Codexの開発ワークフロー</h2>
 <p dir="auto">このプロジェクトでは、AIへ一度だけ「アプリを作って」と依頼したのではありません。Claude Designをデザインレビューと画面設計に、Codexをコードベースの調査と実装に使い、最後は必ずiPhoneへ戻す反復を続けました。</p>
 <pre lang="mermaid">flowchart LR
